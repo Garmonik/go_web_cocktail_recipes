@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .active {
+            opacity: 1 !important;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            width: 350px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 {
+            color: #ff4500;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #cc3700;
+        }
+
+        a {
+            display: block;
+            margin-top: 15px;
+            color: #ff4500;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <script>
+        window.onload = function() {
+            const images = [
+                "/static/images/facecontrol/base_login1.png",
+                "/static/images/facecontrol/base_login2.png",
+                "/static/images/facecontrol/base_login3.png",
+                "/static/images/facecontrol/base_login4.png"
+            ];
+
+            let currentIndex = 0;
+            const bgContainer = document.getElementById("bg-container");
+
+            let bg1 = document.createElement("div");
+            let bg2 = document.createElement("div");
+
+            bg1.className = "bg-image active";
+            bg2.className = "bg-image";
+
+            bg1.style.backgroundImage = `url(${images[currentIndex]})`;
+            bgContainer.appendChild(bg1);
+            bgContainer.appendChild(bg2);
+
+            function changeBackground() {
+                currentIndex = (currentIndex + 1) % images.length;
+
+                let activeBg = document.querySelector(".bg-image.active");
+                let inactiveBg = document.querySelector(".bg-image:not(.active)");
+
+                inactiveBg.style.backgroundImage = `url(${images[currentIndex]}?v=${Date.now()})`;
+                inactiveBg.classList.add("active");
+
+                setTimeout(() => {
+                    activeBg.classList.remove("active");
+                }, 1500);
+            }
+
+            // Меняем фон каждые 3 секунды
+            setInterval(changeBackground, 5000);
+        };
+    </script>
+</head>
+<body>
+
+<div id="bg-container"></div>
+
+<div class="overlay">
+    <h2>Вход</h2>
+    <form method="post" action="/login/">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Войти</button>
+    </form>
+    <a href="/register/">Зарегистрироваться</a>
+</div>
+
+</body>
+</html>

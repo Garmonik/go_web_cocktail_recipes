@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Env        string `yaml:"env" env-default:"local"`
 	DBPath     string `yaml:"db_path" env-required:"true"`
+	SecretKey  string `yaml:"secret_key" env-required:"true"`
 	HTTPServer `yaml:"http_server"`
 }
 
