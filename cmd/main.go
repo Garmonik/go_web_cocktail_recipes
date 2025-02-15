@@ -2,12 +2,8 @@ package main
 
 import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/db"
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/handlers"
-	middleware_auth "github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware/auth"
-	middleware_base "github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware/base"
+	middleware_routers "github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware/logger"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,50 +12,20 @@ import (
 )
 
 func main() {
-	// set app config
+	// setup config
 	cfg := config.MustLoad()
-
-	// set app logger
+	// setup logger
 	log := logger.SetupLogger(cfg.Env)
 
-	// set app database
+	// setup database
 	dataBase, err := db.New(cfg.DBPath)
 	if err != nil {
 		log.Error("Error opening database", "err", err)
 		os.Exit(1)
 	}
-	_ = dataBase
 
-	//set app router
-	router := chi.NewRouter()
-
-	// set app middleware
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-	router.Use(logger.New(log))
-	router.Use(middleware.Recoverer)
-
-	router.Group(func(r chi.Router) {
-		r.Use(middleware.StripSlashes)
-		r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	})
-
-	router.Group(func(r chi.Router) {
-		r.Use(middleware.URLFormat)
-		r.Use(middleware_base.TrailingSlashMiddleware)
-
-		r.Get("/login/", func(w http.ResponseWriter, r *http.Request) {
-			handlers.LoginPage(w, r, cfg)
-		})
-		r.Get("/register/", func(w http.ResponseWriter, r *http.Request) {
-			handlers.RegisterPage(w, r, cfg)
-		})
-
-		router.Group(func(r chi.Router) {
-			r.Use(middleware_auth.AuthMiddleware)
-
-		})
-	})
+	//setup router
+	router := middleware_routers.SetupRouter(log, cfg, dataBase)
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 	log.Info("starting application", slog.String("env", cfg.Env))
