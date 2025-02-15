@@ -51,6 +51,9 @@ func main() {
 		r.Get("/login/", func(w http.ResponseWriter, r *http.Request) {
 			handlers.LoginPage(w, r, cfg)
 		})
+		r.Get("/register/", func(w http.ResponseWriter, r *http.Request) {
+			handlers.RegisterPage(w, r, cfg)
+		})
 
 		router.Group(func(r chi.Router) {
 			r.Use(middleware_auth.AuthMiddleware)

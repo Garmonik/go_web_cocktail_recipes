@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// LoginPage templates/home.html
+// LoginPage templates/login.html
 func LoginPage(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	cookie, err := r.Cookie("auth_token")
 	if err == nil {
@@ -17,4 +17,17 @@ func LoginPage(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	}
 
 	http.ServeFile(w, r, "./static/templates/facecontrol/login.html")
+}
+
+// RegisterPage LoginPage templates/register.html
+func RegisterPage(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
+	cookie, err := r.Cookie("auth_token")
+	if err == nil {
+		if utils.IsValidToken(cookie.Value, cfg) {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+	}
+
+	http.ServeFile(w, r, "./static/templates/facecontrol/register.html")
 }
