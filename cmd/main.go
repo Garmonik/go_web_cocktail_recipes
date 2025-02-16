@@ -1,19 +1,18 @@
 package main
 
 import (
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/db"
-	middleware_routers "github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware"
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/http-server/middleware/logger"
-	"log/slog"
-	"net/http"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
 	"os"
-
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/config"
 )
 
 func main() {
 	// setup config
 	cfg := config.MustLoad()
+
 	// setup logger
 	log := logger.SetupLogger(cfg.Env)
 
@@ -27,18 +26,8 @@ func main() {
 	//setup router
 	router := middleware_routers.SetupRouter(log, cfg, dataBase)
 
-	log.Info("starting server", slog.String("address", cfg.Address))
-	log.Info("starting application", slog.String("env", cfg.Env))
-	log.Debug("debug mod are enabled")
-
 	// configuration server
-	srv := &http.Server{
-		Addr:         cfg.Address,
-		Handler:      router,
-		ReadTimeout:  cfg.HTTPServer.Timeout,
-		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
-	}
+	srv := app.ConfigServer(cfg, router)
 
 	// run server
 	if err := srv.ListenAndServe(); err != nil {

@@ -2,11 +2,19 @@ package utils
 
 import (
 	"fmt"
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/config"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+//{
+//	"exp": time
+//	"sub": id
+//	"email": email
+//	"urn": cript(username)
+//  "iat": time.Now()
+//}
 
 // IsValidToken check token
 func IsValidToken(tokenString string, cfg *config.Config) bool {

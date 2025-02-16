@@ -1,7 +1,10 @@
 env: 'local'
-db_path: './sqlite.db'
+db_path:    './sqlite.db'
 secret_key: 'qYV35#mXPLf@vf&ugT-89ZkIdc#bR78WGUZS'
 http_server:
-  address: 'localhost:8000'
-  timeout: 4s
+  address:      'localhost:8000'
+  timeout:      4s
   idle_timeout: 60s
+jwt:
+  private_key: 'LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSUZSWnpvRURVNThMN1R4b0kzWHczOXVZd09pbFlIdTl0WlhaVzlnSkhQMVFvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFQVNaOHRmMTFSOUs1cmtYaFRJYUpvNXpNMko1Zmt6SzlKc040NzJoNHRhN2p6Ry9jd0Fvcgo1eTVsTi9pWDJlaWNFQ3lvRjFBcml0ZkdFcVowZGkzNEFnPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQo='
+  public_key:  'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFQVNaOHRmMTFSOUs1cmtYaFRJYUpvNXpNMko1Zgpreks5SnNONDcyaDR0YTdqekcvY3dBb3I1eTVsTi9pWDJlaWNFQ3lvRjFBcml0ZkdFcVowZGkzNEFnPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='

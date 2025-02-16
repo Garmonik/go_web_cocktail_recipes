@@ -1,7 +1,7 @@
 package logger
 
 import (
-	slogpretty "github.com/Garmonik/go_web_cocktail_recipes/internal/lib/logger"
+	slogpretty "github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/lib/logger"
 	"log/slog"
 	"os"
 )
