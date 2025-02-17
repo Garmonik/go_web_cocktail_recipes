@@ -10,7 +10,7 @@ import (
 )
 
 type DataBase struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
 func New(storagePath string) (*DataBase, error) {
@@ -21,7 +21,7 @@ func New(storagePath string) (*DataBase, error) {
 		return nil, fmt.Errorf("%s: %w", operation, err)
 	}
 
-	database := &DataBase{db: db}
+	database := &DataBase{Db: db}
 
 	if err := database.migrate(); err != nil {
 		log.Fatal("Ошибка миграции:", err)
@@ -32,7 +32,7 @@ func New(storagePath string) (*DataBase, error) {
 
 // migrate
 func (d *DataBase) migrate() error {
-	return d.db.AutoMigrate(
+	return d.Db.AutoMigrate(
 		&models2.Avatar{},
 		&models2.User{},
 		&models2.Post{},

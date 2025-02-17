@@ -16,7 +16,6 @@ import (
 type Config struct {
 	Env        string `yaml:"env" env-default:"local"`
 	DBPath     string `yaml:"db_path" env-required:"true"`
-	SecretKey  string `yaml:"secret_key" env-required:"true"`
 	HTTPServer `yaml:"http_server"`
 	JWT        `yaml:"jwt"`
 }
@@ -55,15 +54,6 @@ func MustLoad() *Config {
 	if err != nil {
 		log.Fatalf("cannot ParseKeys: %s", err)
 	}
-	fmt.Println("111111111111111111111111111111111111111111111111111111111111111111111")
-	privBytes, _ := x509.MarshalECPrivateKey(cfg.JWT.PrivateKey)
-
-	fmt.Println(string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: privBytes})))
-
-	// Публичный ключ
-	pubBytes, _ := x509.MarshalPKIXPublicKey(cfg.JWT.PublicKey)
-	fmt.Println(string(pem.EncodeToMemory(&pem.Block{Type: "EC PUBLIC KEY", Bytes: pubBytes})))
-	fmt.Println("111111111111111111111111111111111111111111111111111111111111111111111")
 	return &cfg
 }
 
@@ -91,29 +81,21 @@ func parseECDSAKey(base64Key string, isPrivate bool) (interface{}, error) {
 }
 
 func (cfg *Config) ParseKeys() error {
-	// Парсим приватный ключ
-	privKey, err := parseECDSAKey(cfg.JWT.PrivateKeyPEM, true)
-	if err != nil {
-		return fmt.Errorf("ошибка загрузки приватного ключа: %w", err)
-	}
+	privKey, _ := parseECDSAKey(cfg.JWT.PrivateKeyPEM, true)
 
 	privateKey, ok := privKey.(*ecdsa.PrivateKey)
 	if !ok {
-		return fmt.Errorf("неверный формат приватного ключа")
+		return fmt.Errorf("error privateKey")
 	}
-	cfg.JWT.PrivateKey = privateKey // ✅ Теперь это *ecdsa.PrivateKey
+	cfg.JWT.PrivateKey = privateKey
 
-	// Парсим публичный ключ
-	pubKey, err := parseECDSAKey(cfg.JWT.PublicKeyPEM, false)
-	if err != nil {
-		return fmt.Errorf("ошибка загрузки публичного ключа: %w", err)
-	}
+	pubKey, _ := parseECDSAKey(cfg.JWT.PublicKeyPEM, false)
 
 	publicKey, ok := pubKey.(*ecdsa.PublicKey)
 	if !ok {
-		return fmt.Errorf("неверный формат публичного ключа")
+		return fmt.Errorf("error publicKey")
 	}
-	cfg.JWT.PublicKey = publicKey // ✅ Теперь это *ecdsa.PublicKey
+	cfg.JWT.PublicKey = publicKey
 
 	return nil
 }

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платформа для рецептов коктейлей</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles/base/styles.css">
+</head>
+<body>
+
+<!-- Подключаем хедер -->
+<div id="header"></div>
+
+<div class="container">
+    <!-- Подключаем сайдбар -->
+    <div id="sidebar"></div>
+
+    <main class="content">
+        <div class="section">
+            <div class="text">
+                <h2>Добро пожаловать на платформу рецептов коктейлей!</h2>
+                <p>Это место, где любители коктейлей могут делиться своими любимыми рецептами, находить новые идеи и общаться с единомышленниками.</p>
+            </div>
+            <div class="image-container">
+                <img id="randomImage1" src="" alt="Коктейль">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="text">
+                <h2>Что вы можете делать?</h2>
+                <ul>
+                    <li>👥 Общаться с другими пользователями и обмениваться идеями.</li>
+                    <li>🍹 Добавлять собственные рецепты коктейлей с фото и описанием.</li>
+                    <li>❤️ Лайкать рецепты, которые вам понравились.</li>
+                    <li>💬 Оставлять комментарии, обсуждать ингредиенты и способы приготовления.</li>
+                    <li>⭐ Оценивать коктейли от 0 до 10 баллов, помогая другим пользователям найти лучшие рецепты.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img id="randomImage2" src="" alt="Коктейль">
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Подключение шаблонов (AJAX)
+    fetch("/static/templates/base/header.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("header").innerHTML = data);
+
+    fetch("/static/templates/base/sidebar.html")
+        .then(response => response.text())
+        .then(data => document.getElementById("sidebar").innerHTML = data);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let images = [
+            "/static/images/general/home1.png",
+            "/static/images/general/home2.png",
+            "/static/images/general/home3.png",
+            "/static/images/general/home4.png",
+            "/static/images/general/home5.png",
+            "/static/images/general/home6.png",
+        ];
+
+        document.getElementById("randomImage1").src = images[Math.floor(Math.random() * images.length)];
+        document.getElementById("randomImage2").src = images[Math.floor(Math.random() * images.length)];
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const logoutLink = document.querySelector('a[href="/login/"]');
+
+        if (logoutLink) {
+            logoutLink.addEventListener("click", async function (event) {
+                event.preventDefault(); // Отменяем стандартное поведение ссылки
+
+                try {
+                    const response = await fetch("/api/logout/", {
+                        method: "POST",
+                        credentials: "include", // Включаем куки (если нужно)
+                        headers: {
+                            "X-CSRFToken": getCSRFToken() // Если используется CSRF защита
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.href = "/login/"; // Редирект при успешном выходе
+                    } else {
+                        console.error("Ошибка при выходе:", response.status);
+                    }
+                } catch (error) {
+                    console.error("Ошибка сети:", error);
+                }
+            });
+        }
+
+        function getCSRFToken() {
+            const match = document.cookie.match(/csrftoken=([^;]+)/);
+            return match ? match[1] : "";
+        }
+    });
+</script>
+</body>
+</html>

@@ -10,7 +10,7 @@
 
 <body>
 <div id="bg-container"></div>
-<form method="post" action="/register/">
+<form id="registerForm">
     <h2>Регистрация</h2>
 
     <div class="form-group">
@@ -35,6 +35,8 @@
 
     <button type="submit">Зарегистрироваться</button>
     <a href="/login/">Войти</a>
+
+    <p id="errorMessage" style="color: red; display: none;"></p>
 </form>
 </body>
 </html>

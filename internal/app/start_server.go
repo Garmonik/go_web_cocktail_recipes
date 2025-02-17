@@ -2,7 +2,15 @@ package app
 
 import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/facecontrol"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/render_page"
+	middlewarebase "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/base"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"log/slog"
+	"mime"
 	"net/http"
 )
 
@@ -15,4 +23,41 @@ func ConfigServer(cfg *config.Config, router chi.Router) *http.Server {
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 	return srv
+}
+
+func StandardMiddleware(r *chi.Mux, log *slog.Logger) {
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+
+	if log != nil {
+		r.Use(logger.New(log))
+	}
+}
+
+func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *chi.Mux {
+	router := chi.NewRouter()
+
+	// middleware
+	StandardMiddleware(router, log)
+	mime.AddExtensionType(".css", "text/css")
+	// static
+	router.Group(func(r chi.Router) {
+		r.Use(middleware.StripSlashes)
+		r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	})
+
+	// URLs list without auth
+	router.Group(func(r chi.Router) {
+		r.Use(middleware.URLFormat)
+		r.Use(middlewarebase.TrailingSlashMiddleware)
+
+		render_page.URLs(cfg, router, log)
+		facecontrol.URLs(cfg, router, log, dataBase)
+	})
+
+	log.Info("starting server", slog.String("address", cfg.Address))
+	log.Info("starting application", slog.String("env", cfg.Env))
+	log.Debug("debug mod are enabled")
+	return router
 }

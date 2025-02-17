@@ -11,7 +11,7 @@
 <body>
 <div id="bg-container"></div>
 
-<form method="post" action="/login/">
+<form id="loginForm">
     <h2>Вход</h2>
     <div class="form-group">
         <label for="email">Email:</label>
@@ -25,6 +25,8 @@
 
     <button type="submit">Войти</button>
     <a href="/register/">Зарегистрироваться</a>
+
+    <p id="errorMessage" style="color: red; display: none;"></p>
 </form>
 </body>
 </html>

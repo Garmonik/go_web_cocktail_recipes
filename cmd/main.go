@@ -4,7 +4,6 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
-	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
 	"os"
 )
@@ -24,7 +23,7 @@ func main() {
 	}
 
 	//setup router
-	router := middleware_routers.SetupRouter(log, cfg, dataBase)
+	router := app.SetupRouter(log, cfg, dataBase)
 
 	// configuration server
 	srv := app.ConfigServer(cfg, router)

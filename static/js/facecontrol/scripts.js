@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
     let images = [];
     if (window.location.pathname.includes("login")) {
         images = [
@@ -44,4 +44,48 @@ window.onload = function() {
     }
 
     setInterval(changeBackground, 5000);
+
+    // Функция обработки отправки формы
+    function handleFormSubmit(formId, apiUrl, redirectUrl) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const formBody = new URLSearchParams();
+
+            for (const [key, value] of formData.entries()) {
+                formBody.append(key, value);
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formBody.toString()
+                });
+
+                const data = await response.json();
+                const errorMessageEl = document.getElementById("errorMessage");
+
+                if (response.ok) {
+                    window.location.href = redirectUrl;
+                } else {
+                    errorMessageEl.textContent = data.Error || "Ошибка";
+                    errorMessageEl.style.display = "block";
+                }
+            } catch (error) {
+                alert("Ошибка сети");
+
+            }
+        });
+    }
+
+    // Инициализация форм
+    handleFormSubmit("registerForm", "/api/register/", "/home/");
+    handleFormSubmit("loginForm", "/api/login/", "/home/");
 };
