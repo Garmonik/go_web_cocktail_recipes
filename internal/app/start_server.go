@@ -5,6 +5,7 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/facecontrol"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/render_page"
+	middleware_auth "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/auth"
 	middlewarebase "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/base"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
 	"github.com/go-chi/chi/v5"
@@ -12,6 +13,7 @@ import (
 	"log/slog"
 	"mime"
 	"net/http"
+	"os"
 )
 
 func ConfigServer(cfg *config.Config, router chi.Router) *http.Server {
@@ -40,7 +42,12 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 
 	// middleware
 	StandardMiddleware(router, log)
-	mime.AddExtensionType(".css", "text/css")
+	err := mime.AddExtensionType(".css", "text/css")
+	if err != nil {
+		log.Error("Failed to add css", "error", err)
+		os.Exit(1)
+	}
+
 	// static
 	router.Group(func(r chi.Router) {
 		r.Use(middleware.StripSlashes)
@@ -51,9 +58,12 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 	router.Group(func(r chi.Router) {
 		r.Use(middleware.URLFormat)
 		r.Use(middlewarebase.TrailingSlashMiddleware)
+		r.Use(func(next http.Handler) http.Handler {
+			return middleware_auth.AuthMiddleware(next, cfg, dataBase)
+		})
 
-		render_page.URLs(cfg, router, log)
-		facecontrol.URLs(cfg, router, log, dataBase)
+		render_page.URLs(cfg, r, log)
+		facecontrol.URLs(cfg, r, log, dataBase)
 	})
 
 	log.Info("starting server", slog.String("address", cfg.Address))

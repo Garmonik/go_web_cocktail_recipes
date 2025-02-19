@@ -12,13 +12,13 @@ import (
 
 type Facecontrol struct {
 	cfg      *config.Config
-	router   *chi.Mux
+	router   chi.Router
 	log      *slog.Logger
-	dataBase *db.DataBase
+	DataBase *db.DataBase
 }
 
-func New(cfg *config.Config, r *chi.Mux, log *slog.Logger, dataBase *db.DataBase) *Facecontrol {
-	return &Facecontrol{cfg: cfg, router: r, log: log, dataBase: dataBase}
+func New(cfg *config.Config, r chi.Router, log *slog.Logger, dataBase *db.DataBase) *Facecontrol {
+	return &Facecontrol{cfg: cfg, router: r, log: log, DataBase: dataBase}
 }
 
 func (facecontrol *Facecontrol) LoginUser(w http.ResponseWriter, req *http.Request) {
@@ -36,27 +36,16 @@ func (facecontrol *Facecontrol) LoginUser(w http.ResponseWriter, req *http.Reque
 		utils.JsonResponse400("Email and password are required", w)
 		return
 	}
-	user, err := CheckUser(email, password, facecontrol)
+	user, err := utils.CheckUser(email, password, facecontrol.DataBase)
 	if err != nil {
 		facecontrol.log.Error(err.Error())
 		utils.JsonResponse400(err.Error(), w)
 		return
 	}
-	token, errToken := GenerateToken(user, facecontrol)
-	if errToken != nil {
-		facecontrol.log.Error(errToken.Error())
-		utils.JsonResponse400("Some error with server", w)
-		return
+	err = GenerateToken(facecontrol, user, w)
+	if err != nil {
+		utils.JsonResponse400(err.Error(), w)
 	}
-	http.SetCookie(w, &http.Cookie{
-		Name:     "auth_token",
-		Value:    token,
-		Path:     "/",
-		Expires:  time.Now().Add(30 * 24 * time.Hour),
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	})
 
 	utils.JsonResponse200Facecontrol(user.ID, http.StatusOK, w)
 	return
@@ -83,20 +72,20 @@ func (facecontrol *Facecontrol) RegisterUser(w http.ResponseWriter, req *http.Re
 		facecontrol.log.Error("Name length exceeds 20 characters", w)
 		utils.JsonResponse400("Name length exceeds 20 characters", w)
 	}
-	user, err := CheckUserByEmail(email, facecontrol)
-	if err != "user not found" {
+	user, err := utils.CheckUserByEmail(email, facecontrol.DataBase)
+	if err != "users not found" {
 		facecontrol.log.Error("User with this date already exists")
 		utils.JsonResponse400("User with this date already exists", w)
 		return
 	}
-	user, err = CheckUserByName(name, facecontrol)
-	if err != "user not found" {
+	user, err = utils.CheckUserByName(name, facecontrol.DataBase)
+	if err != "users not found" {
 		facecontrol.log.Error("User with this name already exists")
 		utils.JsonResponse400("User with this date already exists", w)
 		return
 	}
 	if password != password2 {
-		facecontrol.log.Error("Password does not match")
+		facecontrol.log.Error("Passwords do not match")
 		utils.JsonResponse400("Passwords do not match", w)
 		return
 	}
@@ -107,22 +96,10 @@ func (facecontrol *Facecontrol) RegisterUser(w http.ResponseWriter, req *http.Re
 		utils.JsonResponse400(errorCreate.Error(), w)
 		return
 	}
-	token, errToken := GenerateToken(user, facecontrol)
-	if errToken != nil {
-		facecontrol.log.Error(errToken.Error())
-		utils.JsonResponse400("Some error with server", w)
-		return
+	errTokens := GenerateToken(facecontrol, user, w)
+	if errTokens != nil {
+		utils.JsonResponse400(errTokens.Error(), w)
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "auth_token",
-		Value:    token,
-		Path:     "/",
-		Expires:  time.Now().Add(30 * 24 * time.Hour),
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	})
 
 	utils.JsonResponse200Facecontrol(user.ID, http.StatusCreated, w)
 	return
@@ -130,19 +107,30 @@ func (facecontrol *Facecontrol) RegisterUser(w http.ResponseWriter, req *http.Re
 
 func (facecontrol *Facecontrol) LogoutUser(w http.ResponseWriter, req *http.Request) {
 	facecontrol.log.Info("start LogoutUser")
-	for _, cookie := range req.Cookies() {
-		http.SetCookie(w, &http.Cookie{
-			Name:     cookie.Name,
-			Value:    "",
-			Path:     "/",
-			Domain:   "",
-			Expires:  time.Unix(0, 0),
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   cookie.Secure,
-			SameSite: cookie.SameSite,
-		})
-	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Path:     "/",
+		Domain:   "localhost", // Должно совпадать с установленными куками!
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	// Удаляем refresh_token
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Path:     "/",
+		Domain:   "localhost", // Должно совпадать с установленными куками!
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 
 	w.WriteHeader(http.StatusNoContent)
 	return

@@ -6,7 +6,7 @@ import (
 	"log/slog"
 )
 
-func URLs(cfg *config.Config, r *chi.Mux, log *slog.Logger) {
+func URLs(cfg *config.Config, r chi.Router, log *slog.Logger) {
 	renderer := New(cfg, r, log)
 
 	r.Get("/login/", renderer.LoginPage)

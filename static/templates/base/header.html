@@ -1,4 +1,52 @@
 <header>
-    <img src="/static/images/general/logo.jpg" alt="Логотип">
-    <a href="/home/" style="margin-right: auto;">Главная</a>
+    <div class="left">
+        <img src="/static/images/general/logo.jpg" alt="Логотип">
+        <a href="/home/">Главная</a>
+    </div>
 </header>
+
+<style>
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: #222;
+        padding: 15px 20px;
+        box-shadow: 0 2px 5px rgba(255, 69, 0, 0.5);
+        z-index: 1000;
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between; /* Разнести элементы по краям */
+        align-items: center;
+    }
+    header img {
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    header a {
+        text-decoration: none;
+        color: #ff4500;
+        font-weight: bold;
+    }
+
+    .left {
+        display: flex;
+        align-items: center;
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Отступ между именем и аватаркой */
+    }
+
+    .right img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%; /* Круглая аватарка */
+        border: 2px solid #ff4500; /* Оранжевый ободок */
+    }
+
+</style>

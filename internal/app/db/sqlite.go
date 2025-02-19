@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	models2 "github.com/Garmonik/go_web_cocktail_recipes/internal/app/db/models"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db/models"
 	"log"
 
 	"gorm.io/driver/sqlite"
@@ -33,11 +33,11 @@ func New(storagePath string) (*DataBase, error) {
 // migrate
 func (d *DataBase) migrate() error {
 	return d.Db.AutoMigrate(
-		&models2.Avatar{},
-		&models2.User{},
-		&models2.Post{},
-		&models2.Image{},
-		&models2.Comment{},
-		&models2.Like{},
+		&models.Avatar{},
+		&models.User{},
+		&models.Post{},
+		&models.Image{},
+		&models.Comment{},
+		&models.Like{},
 	)
 }

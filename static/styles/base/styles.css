@@ -15,32 +15,6 @@ body {
     padding: 20px;
 }
 
-/* Фиксированный хедер */
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: #222;
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    box-shadow: 0 2px 5px rgba(255, 69, 0, 0.5);
-    z-index: 1000;
-    border-radius: 15px;
-}
-
-header img {
-    height: 40px;
-    margin-right: 10px;
-}
-
-header a {
-    text-decoration: none;
-    color: #ff4500;
-    font-weight: bold;
-}
-
 .sidebar {
     background: #222;
     padding: 20px;

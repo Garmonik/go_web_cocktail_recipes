@@ -7,7 +7,7 @@ import (
 	"log/slog"
 )
 
-func URLs(cfg *config.Config, r *chi.Mux, log *slog.Logger, dataBase *db.DataBase) {
+func URLs(cfg *config.Config, r chi.Router, log *slog.Logger, dataBase *db.DataBase) {
 	renderer := New(cfg, r, log, dataBase)
 
 	r.Post("/api/login/", renderer.LoginUser)
