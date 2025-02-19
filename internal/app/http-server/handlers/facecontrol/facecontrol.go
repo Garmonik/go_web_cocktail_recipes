@@ -111,21 +111,19 @@ func (facecontrol *Facecontrol) LogoutUser(w http.ResponseWriter, req *http.Requ
 		Name:     "access_token",
 		Value:    "",
 		Path:     "/",
-		Domain:   "localhost", // Должно совпадать с установленными куками!
 		Expires:  time.Unix(0, 0),
+		Domain:   req.Host,
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	})
-
-	// Удаляем refresh_token
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    "",
 		Path:     "/",
-		Domain:   "localhost", // Должно совпадать с установленными куками!
 		Expires:  time.Unix(0, 0),
+		Domain:   req.Host,
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
