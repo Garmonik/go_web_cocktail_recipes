@@ -53,6 +53,10 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 	router.Group(func(r chi.Router) {
 		r.Use(middleware.StripSlashes)
 		r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+		r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, "static/images/general/logo.ico")
+		})
+
 	})
 
 	// URLs list without auth
