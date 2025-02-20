@@ -56,7 +56,6 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 		r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFile(w, r, "static/images/general/logo.ico")
 		})
-
 	})
 
 	// URLs list without auth
@@ -66,7 +65,6 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 		r.Use(func(next http.Handler) http.Handler {
 			return middleware_auth.AuthMiddleware(next, cfg, dataBase)
 		})
-
 		render_page.URLs(cfg, r, log)
 		facecontrol.URLs(cfg, r, log, dataBase)
 		users.URLs(cfg, r, log, dataBase)
