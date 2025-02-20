@@ -124,12 +124,10 @@ func IsValidToken(tokenString string, cfg *config.Config) bool {
 	if err != nil || !token.Valid {
 		return false
 	}
-
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		return false
 	}
-
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
 		return false
@@ -144,32 +142,26 @@ func RefreshAccessToken(tokenString string, cfg *config.Config, db *db.DataBase)
 	if err != nil || !token.Valid {
 		return "", ""
 	}
-
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		return "", ""
 	}
-
 	exp, ok := claims["exp"].(float64)
 	if !ok || time.Now().Unix() > int64(exp) {
 		return "", ""
 	}
-
 	scope, ok := claims["scope"].(string)
 	if !ok || scope != "refresh" {
 		return "", ""
 	}
-
 	email, ok := claims["email"].(string)
 	if !ok {
 		return "", ""
 	}
-
 	user, errUser := CheckUserByEmail(email, db)
 	if errUser != "" {
 		return "", ""
 	}
-
 	accessToken, errToken := GenerateAccessToken(user, cfg)
 	if errToken != nil {
 		return "", ""
