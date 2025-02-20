@@ -6,7 +6,7 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/facecontrol"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/render_page"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/users"
-	middleware_auth "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/auth"
+	middlewareauth "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/auth"
 	middlewarebase "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/base"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
 	"github.com/go-chi/chi/v5"
@@ -63,7 +63,7 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 		r.Use(middleware.URLFormat)
 		r.Use(middlewarebase.TrailingSlashMiddleware)
 		r.Use(func(next http.Handler) http.Handler {
-			return middleware_auth.AuthMiddleware(next, cfg, dataBase)
+			return middlewareauth.AuthMiddleware(next, cfg, dataBase)
 		})
 		render_page.URLs(cfg, r, log)
 		facecontrol.URLs(cfg, r, log, dataBase)

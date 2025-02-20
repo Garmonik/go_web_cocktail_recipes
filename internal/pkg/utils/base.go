@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 )
 
 type Json400 struct {
@@ -17,11 +18,17 @@ type Json200Facecontrol struct {
 func JsonResponse400(text string, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(Json400{Error: text})
+	err := json.NewEncoder(w).Encode(Json400{Error: text})
+	if err != nil {
+		os.Exit(1)
+	}
 }
 
 func JsonResponse200Facecontrol(UserId uint, statusCode int, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(Json200Facecontrol{Status: "Success", ID: UserId})
+	err := json.NewEncoder(w).Encode(Json200Facecontrol{Status: "Success", ID: UserId})
+	if err != nil {
+		os.Exit(1)
+	}
 }

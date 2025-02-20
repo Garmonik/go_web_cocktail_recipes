@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
 	"fmt"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
@@ -13,23 +11,6 @@ import (
 	"net/http"
 	"time"
 )
-
-// hashWithHMAC adds security HMAC before bcrypt
-func hashWithHMAC(password string, secretKey string) []byte {
-	h := hmac.New(sha256.New, []byte(secretKey))
-	h.Write([]byte(password))
-	return h.Sum(nil)
-}
-
-// HashPassword hashes password with bcrypt
-func HashPassword(password string, secretKey string) (string, error) {
-	hmacHash := hashWithHMAC(password, secretKey)
-	hashedPassword, err := bcrypt.GenerateFromPassword(hmacHash, bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hashedPassword), nil
-}
 
 // CheckPassword checks if the password matches the hash
 func CheckPassword(user *models.User, password string) bool {

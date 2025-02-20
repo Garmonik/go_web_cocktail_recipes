@@ -46,7 +46,10 @@ func (u *User) ShortUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		os.Exit(1)
+	}
 }
 
 func (u *User) MyUserInfo(w http.ResponseWriter, r *http.Request) {
@@ -74,5 +77,8 @@ func (u *User) MyUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		os.Exit(1)
+	}
 }
