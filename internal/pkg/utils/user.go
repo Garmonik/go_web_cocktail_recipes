@@ -9,6 +9,8 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db/models"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"log"
+	"net/http"
 	"time"
 )
 
@@ -37,11 +39,13 @@ func CheckPassword(user *models.User, password string) bool {
 
 func CheckUserByEmail(email string, dataBase *db.DataBase) (*models.User, string) {
 	var user models.User
-	if err := dataBase.Db.Select("id", "name", "email", "password").
+	if err := dataBase.Db.Preload("Avatar").
+		Select("id", "name", "email", "password", "avatar_id").
 		Where("email = ?", email).
 		First(&user).Error; err != nil {
 		return &models.User{}, "users not found"
 	}
+
 	return &user, ""
 }
 
@@ -112,6 +116,7 @@ func GenerateRefreshToken(user *models.User, cfg *config.Config) (string, error)
 		"scope": "refresh",
 		"iat":   now.Unix(),
 		"site":  "cocktail website",
+		"email": user.Email,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
@@ -133,12 +138,7 @@ func GenerateRefreshToken(user *models.User, cfg *config.Config) (string, error)
 
 // IsValidToken check token
 func IsValidToken(tokenString string, cfg *config.Config) bool {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method")
-		}
-		return cfg.JWT.PublicKey, nil
-	})
+	token, err := GetToken(tokenString, cfg)
 
 	if err != nil || !token.Valid {
 		return false
@@ -158,12 +158,7 @@ func IsValidToken(tokenString string, cfg *config.Config) bool {
 }
 
 func RefreshAccessToken(tokenString string, cfg *config.Config, db *db.DataBase) (string, string) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method")
-		}
-		return cfg.JWT.PublicKey, nil
-	})
+	token, err := GetToken(tokenString, cfg)
 
 	if err != nil || !token.Valid {
 		return "", ""
@@ -204,4 +199,40 @@ func RefreshAccessToken(tokenString string, cfg *config.Config, db *db.DataBase)
 	}
 	return accessToken, refreshToken
 
+}
+
+func GetUserByToken(r *http.Request, cfg *config.Config, db *db.DataBase) (*models.User, error) {
+	accessCookie, errAccess := r.Cookie("access_token")
+	if errAccess != nil {
+		return nil, errAccess
+	}
+	log.Println("Received access_token in request:", accessCookie.Value)
+
+	token, err := GetToken(accessCookie.Value, cfg)
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token")
+	}
+	email, ok := claims["email"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid token")
+	}
+	user, errUser := CheckUserByEmail(email, db)
+	if errUser != "" {
+		return nil, fmt.Errorf("user not found")
+	}
+	return user, nil
+}
+
+func GetToken(tokenString string, cfg *config.Config) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return cfg.JWT.PublicKey, nil
+	})
+	return token, err
 }

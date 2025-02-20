@@ -7,9 +7,9 @@ import (
 	"log/slog"
 )
 
-func URLs(cfg *config.Config, r *chi.Mux, log *slog.Logger, dataBase *db.DataBase) {
-	users_url := New(cfg, r, log, dataBase)
+func URLs(cfg *config.Config, r chi.Router, log *slog.Logger, dataBase *db.DataBase) {
+	usersUrl := New(cfg, r, log, dataBase)
 
-	r.Post("/api/user/short/", users_url.ShortUserInfo)
+	r.Get("/api/user/short/", usersUrl.ShortUserInfo)
 	return
 }

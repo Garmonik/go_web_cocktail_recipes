@@ -15,5 +15,5 @@ type User struct {
 	Bio       string    `gorm:"type:text"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	AvatarID  uint
-	Avatar    Avatar `gorm:"foreignKey:AvatarID"`
+	Avatar    Avatar `gorm:"foreignKey:avatar_id"`
 }

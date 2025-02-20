@@ -4,6 +4,7 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/utils"
+	"log"
 	"net/http"
 	"time"
 )
@@ -14,27 +15,50 @@ func AuthMiddleware(next http.Handler, cfg *config.Config, db *db.DataBase) http
 		accessCookie, errAccess := r.Cookie("access_token")
 		refreshCookie, errRefresh := r.Cookie("refresh_token")
 
-		validAccess := false
 		if errAccess == nil && accessCookie != nil && accessCookie.Value != "" {
-			validAccess = utils.IsValidToken(accessCookie.Value, cfg)
-		}
-		if validAccess {
-			if r.URL.Path == "/login/" || r.URL.Path == "/register/" || r.URL.Path == "/api/login" || r.URL.Path == "/api/register" {
-				http.Redirect(w, r, "/home/", http.StatusFound)
+			if utils.IsValidToken(accessCookie.Value, cfg) {
+				if r.URL.Path == "/login/" || r.URL.Path == "/register/" || r.URL.Path == "/api/login" || r.URL.Path == "/api/register" {
+					http.Redirect(w, r, "/home/", http.StatusFound)
+					return
+				}
+				next.ServeHTTP(w, r)
 				return
 			}
-			next.ServeHTTP(w, r)
-			return
 		}
-
 		if errRefresh == nil && refreshCookie != nil && refreshCookie.Value != "" {
 			accessToken, refreshToken := utils.RefreshAccessToken(refreshCookie.Value, cfg, db)
+
+			if accessToken == "" || refreshToken == "" {
+				http.SetCookie(w, &http.Cookie{
+					Name:    "access_token",
+					Value:   "",
+					Path:    "/",
+					Expires: time.Unix(0, 0),
+					Domain:  r.Host,
+					MaxAge:  -1,
+				})
+				http.SetCookie(w, &http.Cookie{
+					Name:    "refresh_token",
+					Value:   "",
+					Path:    "/",
+					Expires: time.Unix(0, 0),
+					Domain:  r.Host,
+					MaxAge:  -1,
+				})
+				http.Redirect(w, r, "/login/", http.StatusFound)
+				return
+			}
+
+			domain := r.Host
+			if domain == "localhost:8000" {
+				domain = ""
+			}
 			http.SetCookie(w, &http.Cookie{
 				Name:     "access_token",
 				Value:    accessToken,
 				Path:     "/",
-				Domain:   r.Host,
-				Expires:  time.Now().Add(15 * time.Minute),
+				Domain:   domain,
+				Expires:  time.Now().Add(24 * time.Hour),
 				HttpOnly: true,
 				Secure:   refreshCookie.Secure,
 				SameSite: refreshCookie.SameSite,
@@ -43,17 +67,14 @@ func AuthMiddleware(next http.Handler, cfg *config.Config, db *db.DataBase) http
 				Name:     "refresh_token",
 				Value:    refreshToken,
 				Path:     "/",
-				Domain:   r.Host,
+				Domain:   domain,
 				Expires:  time.Now().Add(30 * 24 * time.Hour),
 				HttpOnly: true,
 				Secure:   refreshCookie.Secure,
 				SameSite: refreshCookie.SameSite,
 			})
-			if accessToken == "" || refreshToken == "" {
-			}
 			next.ServeHTTP(w, r)
 			return
-
 		}
 
 		if r.URL.Path != "/login/" && r.URL.Path != "/register/" {
@@ -61,9 +82,12 @@ func AuthMiddleware(next http.Handler, cfg *config.Config, db *db.DataBase) http
 				next.ServeHTTP(w, r)
 				return
 			}
+
+			log.Println("No valid tokens, redirecting to /login/")
 			http.Redirect(w, r, "/login/", http.StatusFound)
 			return
 		}
+
 		next.ServeHTTP(w, r)
 	})
 }

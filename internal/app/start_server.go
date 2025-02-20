@@ -5,6 +5,7 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/facecontrol"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/render_page"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/handlers/users"
 	middleware_auth "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/auth"
 	middlewarebase "github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/base"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/http-server/middleware/logger"
@@ -64,6 +65,7 @@ func SetupRouter(log *slog.Logger, cfg *config.Config, dataBase *db.DataBase) *c
 
 		render_page.URLs(cfg, r, log)
 		facecontrol.URLs(cfg, r, log, dataBase)
+		users.URLs(cfg, r, log, dataBase)
 	})
 
 	log.Info("starting server", slog.String("address", cfg.Address))

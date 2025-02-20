@@ -6,6 +6,7 @@
     <title>Платформа для рецептов коктейлей</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles/base/styles.css">
+    <script src="/static/js/base/scripts.js"></script>
 </head>
 <body>
 
@@ -44,63 +45,5 @@
         </div>
     </main>
 </div>
-
-<script>
-    // Подключение шаблонов (AJAX)
-    fetch("/static/templates/base/header.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("header").innerHTML = data);
-
-    fetch("/static/templates/base/sidebar.html")
-        .then(response => response.text())
-        .then(data => document.getElementById("sidebar").innerHTML = data);
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let images = [
-            "/static/images/general/home/home1.png",
-            "/static/images/general/home/home2.png",
-            "/static/images/general/home/home3.png",
-            "/static/images/general/home/home4.png",
-            "/static/images/general/home/home5.png",
-            "/static/images/general/home/home6.png",
-        ];
-
-        document.getElementById("randomImage1").src = images[Math.floor(Math.random() * images.length)];
-        document.getElementById("randomImage2").src = images[Math.floor(Math.random() * images.length)];
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const logoutLink = document.querySelector('a[href="/login/"]');
-
-        if (logoutLink) {
-            logoutLink.addEventListener("click", async function (event) {
-                event.preventDefault(); // Отменяем стандартное поведение ссылки
-
-                try {
-                    const response = await fetch("/api/logout/", {
-                        method: "POST",
-                        credentials: "include", // Включаем куки (если нужно)
-                        headers: {
-                            "X-CSRFToken": getCSRFToken() // Если используется CSRF защита
-                        }
-                    });
-
-                    if (response.ok) {
-                        window.location.href = "/login/"; // Редирект при успешном выходе
-                    } else {
-                        console.error("Ошибка при выходе:", response.status);
-                    }
-                } catch (error) {
-                    console.error("Ошибка сети:", error);
-                }
-            });
-        }
-
-        function getCSRFToken() {
-            const match = document.cookie.match(/csrftoken=([^;]+)/);
-            return match ? match[1] : "";
-        }
-    });
-</script>
 </body>
 </html>

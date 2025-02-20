@@ -3,6 +3,12 @@
         <img src="/static/images/general/logo.jpg" alt="Логотип">
         <a href="/home/">Главная</a>
     </div>
+    <div class="right" id="user-info">
+        <div class="user-container">
+            <span class="username">Загрузка...</span>
+            <img class="avatar" src="/static/images/base_avatar/default-avatar.png" alt="Аватар">
+        </div>
+    </div>
 </header>
 
 <style>
@@ -17,9 +23,10 @@
         z-index: 1000;
         border-radius: 15px;
         display: flex;
-        justify-content: space-between; /* Разнести элементы по краям */
+        justify-content: space-between;
         align-items: center;
     }
+
     header img {
         height: 40px;
         margin-right: 10px;
@@ -39,14 +46,26 @@
     .right {
         display: flex;
         align-items: center;
-        gap: 10px; /* Отступ между именем и аватаркой */
     }
 
-    .right img {
+    .user-container {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 69, 0, 0.1);
+        padding: 8px 12px;
+        border-radius: 10px;
+    }
+
+    .username {
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .avatar {
         width: 40px;
         height: 40px;
-        border-radius: 50%; /* Круглая аватарка */
-        border: 2px solid #ff4500; /* Оранжевый ободок */
+        border-radius: 50%;
+        border: 2px solid #ff4500;
     }
-
 </style>
