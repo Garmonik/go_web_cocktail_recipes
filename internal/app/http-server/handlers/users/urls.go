@@ -11,5 +11,6 @@ func URLs(cfg *config.Config, r chi.Router, log *slog.Logger, dataBase *db.DataB
 	usersUrl := New(cfg, r, log, dataBase)
 
 	r.Get("/api/user/short/", usersUrl.ShortUserInfo)
+	r.Get("/api/my_user/", usersUrl.MyUserInfo)
 	return
 }

@@ -36,3 +36,7 @@ func (r *Renderer) RegisterPage(w http.ResponseWriter, req *http.Request) {
 func (r *Renderer) HomePage(w http.ResponseWriter, req *http.Request) {
 	r.RenderPage(w, req, "./static/templates/base/home.html")
 }
+
+func (r *Renderer) MyUserPage(w http.ResponseWriter, req *http.Request) {
+	r.RenderPage(w, req, "./static/templates/users/my_user.html")
+}
