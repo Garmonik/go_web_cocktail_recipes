@@ -40,3 +40,7 @@ func (r *Renderer) HomePage(w http.ResponseWriter, req *http.Request) {
 func (r *Renderer) MyUserPage(w http.ResponseWriter, req *http.Request) {
 	r.RenderPage(w, req, "./static/templates/users/my_user.html")
 }
+
+func (r *Renderer) PostsList(w http.ResponseWriter, req *http.Request) {
+	r.RenderPage(w, req, "./static/templates/posts/post.html")
+}

@@ -13,5 +13,6 @@ func URLs(cfg *config.Config, r chi.Router, log *slog.Logger) {
 	r.Get("/register/", renderer.RegisterPage)
 	r.Get("/home/", renderer.HomePage)
 	r.Get("/my_user/", renderer.MyUserPage)
+	r.Get("/recipes/", renderer.PostsList)
 	return
 }

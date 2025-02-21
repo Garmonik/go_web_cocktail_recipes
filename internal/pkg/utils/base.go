@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -31,4 +33,21 @@ func JsonResponse200Facecontrol(UserId uint, statusCode int, w http.ResponseWrit
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func GenerateUUID() string {
+	bytes := make([]byte, 16)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "default-uuid"
+	}
+	return hex.EncodeToString(bytes)
+}
+
+var AllowedExtensions = map[string]bool{
+	".jpg":  true,
+	".jpeg": true,
+	".png":  true,
+	".gif":  true,
+	".webp": true,
 }
