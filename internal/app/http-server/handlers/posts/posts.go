@@ -100,7 +100,7 @@ func (p Posts) PostsListAPI(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Ошибка при кодировании JSON", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
 
@@ -257,7 +257,7 @@ func (p Posts) PostCreate(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Ошибка при кодировании JSON", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
 
@@ -369,6 +369,6 @@ func (p Posts) PostsListByUserAPI(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Ошибка при кодировании JSON", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }

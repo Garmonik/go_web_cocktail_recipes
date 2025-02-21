@@ -80,6 +80,6 @@ func (u *User) MyUserInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Ошибка при кодировании JSON", http.StatusInternalServerError)
+		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
