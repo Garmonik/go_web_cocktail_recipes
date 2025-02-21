@@ -1,34 +1,79 @@
 .content {
-    padding: 40px;
     background: #222;
     border-radius: 20px;
     box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрирование постов */
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
 }
 
+
 .post {
-    background: rgba(255, 69, 0, 0.2);;
+    background: rgba(255, 69, 0, 0.2);
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.2);;
+    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.2);
     margin-bottom: 20px;
     max-width: 700px;
     width: 100%;
     transition: transform 0.2s;
 }
 
+#posts-container {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем посты */
+    width: 100%;
+}
+
 .post:hover {
     transform: scale(1.02);
 }
 
-.post-header {
+.posts-header {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    justify-content: center;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    background: #222;
+    padding: 15px;
+    z-index: 1000;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
+
+.posts-header button {
+    background: linear-gradient(135deg, #ff4500, #ff7300);
+    color: white;
+    border: none;
+    padding: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 50%;
+    min-width: 150px;
+    max-width: 300px;
+    text-align: center;
+}
+
+.posts-header button:hover {
+    background: #e03e00;
+}
+
+.posts-header button.active {
+    background: #d73800;
+}
+
 
 .avatar {
     width: 50px;
@@ -73,4 +118,8 @@
 
 .like-button:hover {
     transform: scale(1.2);
+}
+
+#posts-container {
+    padding-top: 20px;
 }

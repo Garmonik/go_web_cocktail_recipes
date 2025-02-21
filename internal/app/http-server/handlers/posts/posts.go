@@ -112,7 +112,7 @@ func (p Posts) PostsByIdAPI(w http.ResponseWriter, r *http.Request) {
 		Preload("Image").
 		Where("id = ?", id).
 		First(&post).Error; err != nil {
-		http.Error(w, "Ошибка получения поста", http.StatusNotFound)
+		http.Error(w, "Error receiving mail\n", http.StatusNotFound)
 		return
 	}
 
