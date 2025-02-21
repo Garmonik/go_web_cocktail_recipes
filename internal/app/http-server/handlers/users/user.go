@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type User struct {
@@ -69,6 +70,7 @@ func (u *User) MyUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	avatarBase64 := base64.StdEncoding.EncodeToString(avatarData)
 	response := map[string]string{
+		"id":       strconv.Itoa(int(user.ID)),
 		"username": user.Name,
 		"avatar":   avatarBase64,
 		"bio":      user.Bio,

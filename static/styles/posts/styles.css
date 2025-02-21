@@ -9,6 +9,29 @@
     max-width: 800px;
 }
 
+.profile-container {
+    display: flex;
+    flex-direction: column; /* Меняем на вертикальное расположение */
+    align-items: center;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.user-info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #4a2b18;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.user-posts-wrapper {
+    width: 100%;
+    text-align: center;
+}
 
 .post {
     background: rgba(255, 69, 0, 0.2);
@@ -102,24 +125,29 @@
     margin-top: 10px;
 }
 
-.post-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
+#posts-container {
+    padding-top: 20px;
 }
 
-.like-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    transition: transform 0.2s;
+.post-footer {
+    display: flex;
+    justify-content: flex-start; /* Выравнивание кнопки лайка влево */
+    padding: 5px;
+    margin-top: 5px;
 }
 
 .like-button:hover {
     transform: scale(1.2);
 }
 
-#posts-container {
-    padding-top: 20px;
+.like-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.like-icon {
+    width: 24px; /* Уменьшаем размер иконки */
+    height: 24px;
 }

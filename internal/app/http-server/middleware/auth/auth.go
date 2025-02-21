@@ -4,7 +4,6 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/utils"
-	"log"
 	"net/http"
 	"time"
 )
@@ -83,7 +82,6 @@ func AuthMiddleware(next http.Handler, cfg *config.Config, db *db.DataBase) http
 				return
 			}
 
-			log.Println("No valid tokens, redirecting to /login/")
 			http.Redirect(w, r, "/login/", http.StatusFound)
 			return
 		}

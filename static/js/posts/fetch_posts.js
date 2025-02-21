@@ -31,8 +31,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             postElement.classList.add("post");
             postElement.innerHTML = `
                 <div class="post-header">
-                    <img src="data:image/png;base64,${post.author.avatar}" alt="Avatar" class="avatar">
-                    <span class="username">${post.author.username}</span>
+                    <img src="data:image/png;base64,${post.author.avatar}" 
+                         alt="Avatar" 
+                         class="avatar user-link" 
+                         data-user-id="${post.author.id}">
+                    <span class="username user-link" data-user-id="${post.author.id}">
+                        ${post.author.username}
+                    </span>
                 </div>
                 <div class="post-content">
                     <h3>${post.name}</h3>
@@ -41,7 +46,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 </div>
                 <div class="post-footer">
                     <button class="like-button" data-post-id="${post.id}">
-                        ${post.like ? "❤️" : "🤍"}
+                        <img src="${post.like ? "/static/images/general/icon/like_color.svg" : "/static/images/general/icon/like_black.svg"}" 
+                             alt="Like" class="like-icon">
                     </button>
                 </div>
             `;
@@ -52,7 +58,48 @@ document.addEventListener("DOMContentLoaded", async function () {
         postsHeader.style.opacity = "1";
     }
 
-    // Обработчики кнопок
+    // Делегирование события для клика по аватарке и username
+    contentContainer.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.classList.contains("user-link")) {
+            const userId = target.dataset.userId;
+            if (userId) {
+                window.location.href = `/user/${userId}/`;
+            }
+        }
+    });
+
+    // Обработчик клика на лайк
+    contentContainer.addEventListener("click", async (event) => {
+        const likeButton = event.target.closest(".like-button");
+        if (!likeButton) return;
+
+        const postId = likeButton.dataset.postId;
+        const likeIcon = likeButton.querySelector(".like-icon");
+
+        if (!postId || !likeIcon) return;
+
+        try {
+            const response = await fetch(`/api/post/${postId}/like/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (!response.ok) {
+                throw new Error("Ошибка при лайке поста");
+            }
+
+            // Переключаем иконку лайка
+            if (likeIcon.src.includes("like_black.svg")) {
+                likeIcon.src = "/static/images/general/icon/like_color.svg";
+            } else {
+                likeIcon.src = "/static/images/general/icon/like_black.svg";
+            }
+        } catch (error) {
+            console.error("Ошибка лайка:", error);
+        }
+    });
+
     newPostsBtn.addEventListener("click", () => {
         orderBy = "created";
         offset = 0;

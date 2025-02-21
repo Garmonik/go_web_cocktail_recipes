@@ -27,8 +27,9 @@ type Like struct {
 }
 
 type Comment struct {
-	ID       uint   `gorm:"primaryKey"`
-	text     string `gorm:"not null"`
-	Author   User   `gorm:"foreignKey:AuthorID"`
-	AuthorID uint
+	ID        uint      `gorm:"primaryKey"`
+	text      string    `gorm:"not null"`
+	Author    User      `gorm:"foreignKey:AuthorID"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	AuthorID  uint
 }

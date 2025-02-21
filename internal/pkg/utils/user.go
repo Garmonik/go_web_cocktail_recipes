@@ -7,7 +7,6 @@ import (
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db/models"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -179,7 +178,6 @@ func GetUserByToken(r *http.Request, cfg *config.Config, db *db.DataBase) (*mode
 	if errAccess != nil {
 		return nil, errAccess
 	}
-	log.Println("Received access_token in request:", accessCookie.Value)
 
 	token, err := GetToken(accessCookie.Value, cfg)
 	if err != nil || !token.Valid {

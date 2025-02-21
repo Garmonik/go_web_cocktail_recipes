@@ -11,7 +11,9 @@ func URLs(cfg *config.Config, r chi.Router, log *slog.Logger, dataBase *db.DataB
 	usersUrl := New(cfg, r, log, dataBase)
 
 	r.Get("/api/recipes/", usersUrl.PostsListAPI)
+	r.Get("/api/user/{id}/posts/", usersUrl.PostsListByUserAPI)
 	r.Get("/api/recipes/{id}/", usersUrl.PostsByIdAPI)
 	r.Post("/api/recipes/", usersUrl.PostCreate)
+	r.Post("/api/post/{id}/like/", usersUrl.LikeAPI)
 	return
 }
