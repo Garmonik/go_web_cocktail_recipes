@@ -1,7 +1,7 @@
 package logger
 
 import (
-	slogpretty "github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/lib/logger"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/lib/base_logger"
 	"log/slog"
 	"os"
 )
@@ -35,7 +35,7 @@ func SetupLogger(env string) *slog.Logger {
 }
 
 func setupPrettySlog() *slog.Logger {
-	opts := slogpretty.PrettyHandlerOptions{
+	opts := base_logger.PrettyHandlerOptions{
 		SlogOpts: &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		},

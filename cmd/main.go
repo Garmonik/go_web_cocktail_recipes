@@ -12,7 +12,7 @@ func main() {
 	// setup config
 	cfg := config.MustLoad()
 
-	// setup logger
+	// setup base_logger
 	log := logger.SetupLogger(cfg.Env)
 
 	// setup database

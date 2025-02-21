@@ -231,7 +231,7 @@ func (p Posts) PostCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to create post", http.StatusInternalServerError)
 		return
 	}
-	imageData, err := os.ReadFile(post.Image.Path)
+	imageData, err := os.ReadFile(fileURL)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to read image"}`, http.StatusBadRequest)
 		return
