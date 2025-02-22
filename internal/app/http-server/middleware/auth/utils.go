@@ -1,11 +1,12 @@
 package middleware_auth
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/utils"
-	"net/http"
-	"time"
 )
 
 func isValidAccessToken(r *http.Request, cfg *config.Config) bool {
@@ -13,20 +14,20 @@ func isValidAccessToken(r *http.Request, cfg *config.Config) bool {
 	return err == nil && accessCookie != nil && accessCookie.Value != "" && utils.IsValidToken(accessCookie.Value, cfg)
 }
 
-func handleRefreshToken(w http.ResponseWriter, r *http.Request, cfg *config.Config, db *db.DataBase) (string, bool) {
+func handleRefreshToken(w http.ResponseWriter, r *http.Request, cfg *config.Config, db *db.DataBase) bool {
 	refreshCookie, err := r.Cookie("refresh_token")
 	if err != nil || refreshCookie == nil || refreshCookie.Value == "" {
-		return "", false
+		return false
 	}
 
 	accessToken, refreshToken := utils.RefreshAccessToken(refreshCookie.Value, cfg, db)
 	if accessToken == "" || refreshToken == "" {
 		clearCookies(w, r)
-		return "", false
+		return false
 	}
 
 	setAuthCookies(w, r, accessToken, refreshToken, refreshCookie)
-	return accessToken, true
+	return true
 }
 
 func clearCookies(w http.ResponseWriter, r *http.Request) {
@@ -44,28 +45,29 @@ func clearCookies(w http.ResponseWriter, r *http.Request) {
 
 func setAuthCookies(w http.ResponseWriter, r *http.Request, accessToken, refreshToken string, refreshCookie *http.Cookie) {
 	domain := getDomain(r.Host)
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
-		Value:    accessToken,
-		Path:     "/",
-		Domain:   domain,
-		Expires:  time.Now().Add(24 * time.Hour),
-		HttpOnly: true,
-		Secure:   refreshCookie.Secure,
-		SameSite: refreshCookie.SameSite,
-	})
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
-		Value:    refreshToken,
-		Path:     "/",
-		Domain:   domain,
-		Expires:  time.Now().Add(30 * 24 * time.Hour),
-		HttpOnly: true,
-		Secure:   refreshCookie.Secure,
-		SameSite: refreshCookie.SameSite,
-	})
+	cookies := []http.Cookie{
+		{
+			Name:     "access_token",
+			Value:    accessToken,
+			Path:     "/",
+			Domain:   domain,
+			Expires:  time.Now().Add(24 * time.Hour),
+			HttpOnly: true,
+			Secure:   refreshCookie.Secure,
+			SameSite: refreshCookie.SameSite},
+		{
+			Name:     "refresh_token",
+			Value:    refreshToken,
+			Path:     "/",
+			Domain:   domain,
+			Expires:  time.Now().Add(30 * 24 * time.Hour),
+			HttpOnly: true,
+			Secure:   refreshCookie.Secure,
+			SameSite: refreshCookie.SameSite},
+	}
+	for _, cookie := range cookies {
+		http.SetCookie(w, &cookie)
+	}
 }
 
 func getDomain(host string) string {

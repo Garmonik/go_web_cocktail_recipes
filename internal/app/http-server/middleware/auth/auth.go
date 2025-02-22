@@ -17,7 +17,7 @@ func AuthMiddleware(next http.Handler, cfg *config.Config, db *db.DataBase) http
 			return
 		}
 
-		if _, valid := handleRefreshToken(w, r, cfg, db); valid {
+		if handleRefreshToken(w, r, cfg, db) {
 			next.ServeHTTP(w, r)
 			return
 		}
