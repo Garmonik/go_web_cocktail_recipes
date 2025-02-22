@@ -59,7 +59,7 @@ func (facecontrol *Facecontrol) RegisterUser(w http.ResponseWriter, req *http.Re
 	}
 
 	email := req.FormValue("email")
-	password := req.FormValue("password")
+	password := req.FormValue("password1")
 	password2 := req.FormValue("password2")
 	name := req.FormValue("username")
 

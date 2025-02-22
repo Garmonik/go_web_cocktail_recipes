@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db"
+	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/db/models"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/pkg/utils"
 	"github.com/go-chi/chi/v5"
 	"log/slog"
@@ -81,5 +82,50 @@ func (u *User) MyUserInfo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
+	}
+}
+
+func (u *User) UserInfo(w http.ResponseWriter, r *http.Request) {
+	myUser, err := utils.GetUserByToken(r, u.cfg, u.DataBase)
+	if err != nil {
+		http.Error(w, `{"error": "user not found"}`, http.StatusNotFound)
+		return
+	}
+
+	userID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, `{"error": "user not found"}`, http.StatusNotFound)
+		return
+	}
+
+	var user models.User
+	if err = u.DataBase.Db.Preload("Avatar").
+		Select("id", "name", "email", "password", "avatar_id", "bio").
+		Where("id = ?", userID).
+		First(&user).Error; err != nil {
+		http.Error(w, `{"error": "user not found"}`, http.StatusNotFound)
+		return
+	}
+
+	avatarData, err := os.ReadFile(user.Avatar.Path)
+	if err != nil {
+		http.Error(w, `{"error": "failed to read avatar"}`, http.StatusBadRequest)
+		return
+	}
+
+	avatarBase64 := base64.StdEncoding.EncodeToString(avatarData)
+	response := map[string]interface{}{
+		"id":         user.ID,
+		"username":   user.Name,
+		"avatar":     avatarBase64,
+		"bio":        user.Bio,
+		"email":      user.Email,
+		"my_account": user.ID == myUser.ID,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, `{"error": "Error while encoding JSON"}`, http.StatusInternalServerError)
 	}
 }

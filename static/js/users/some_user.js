@@ -1,35 +1,25 @@
+import { loadSomeUserProfile, loadUserPosts } from "./user_api.js";
+
 document.addEventListener("DOMContentLoaded", async function () {
     const contentContainer = document.getElementById("user-posts");
     const postsHeader = document.querySelector(".posts-header");
     let limit = 10;
     let offset = 0;
 
-    async function loadUserProfile() {
-        try {
-            const response = await fetch("/api/my_user/", {
-                method: "GET",
-                credentials: "include",
-            });
-            if (!response.ok) throw new Error("Ошибка загрузки данных");
-            const data = await response.json();
-
-            document.getElementById("user-avatar").src = `data:image/png;base64,${data.avatar}`;
-            document.getElementById("username").textContent = data.username;
-            document.getElementById("username").dataset.userId = data.id; // Сохраняем userId в dataset
-            document.getElementById("email").textContent = data.email;
-            document.getElementById("bio").textContent = data.bio || "Не указано";
-
-            loadUserPosts(data.id);
-        } catch (error) {
-            console.error("Ошибка загрузки профиля:", error);
+    async function loadAndRenderUserProfile() {
+        const userId = document.body.dataset.userId;
+        if (!userId) {
+            console.error("Ошибка: ID пользователя не найден!");
+            return;
         }
+
+        await loadSomeUserProfile(userId);
+        await loadUserPostsAndRender(userId);
     }
 
-    async function loadUserPosts(userId) {
+    async function loadUserPostsAndRender(userId) {
         try {
-            const response = await fetch(`/api/user/${userId}/posts/?limit=${limit}&offset=${offset}`);
-            if (!response.ok) throw new Error("Ошибка загрузки постов");
-            const posts = await response.json();
+            const posts = await loadUserPosts(userId, limit, offset);
             renderUserPosts(posts);
         } catch (error) {
             console.error("Ошибка загрузки постов:", error);
@@ -62,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             contentContainer.appendChild(postElement);
         });
 
-        postsHeader.style.opacity = "1";
+        if (postsHeader) postsHeader.style.opacity = "1";
     }
 
     contentContainer.addEventListener("click", async (event) => {
@@ -73,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const likeIcon = likeButton.querySelector(".like-icon");
         const likeCount = likeButton.querySelector(".like-count");
 
-        if (!postId || !likeIcon) return;
+        if (!postId || !likeIcon || !likeCount) return;
 
         try {
             const response = await fetch(`/api/post/${postId}/like/`, {
@@ -93,13 +83,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     window.addEventListener("scroll", () => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
             offset += limit;
-            const userId = document.getElementById("username").dataset.userId;
+            const userId = document.body.dataset.userId;
             if (userId) {
-                loadUserPosts(userId);
+                loadUserPostsAndRender(userId);
             }
         }
     });
-    await loadUserProfile();
+
+    await loadAndRenderUserProfile();
+
     document.getElementById("edit-profile").addEventListener("click", () => {
         window.location.href = "/my_user/update/";
     });

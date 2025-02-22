@@ -1,10 +1,13 @@
 package render_page
 
 import (
+	"fmt"
 	"github.com/Garmonik/go_web_cocktail_recipes/internal/app/config"
 	"github.com/go-chi/chi/v5"
 	"log/slog"
 	"net/http"
+	"os"
+	"strings"
 )
 
 type Renderer struct {
@@ -43,4 +46,16 @@ func (r *Renderer) MyUserPage(w http.ResponseWriter, req *http.Request) {
 
 func (r *Renderer) PostsList(w http.ResponseWriter, req *http.Request) {
 	r.RenderPage(w, req, "./static/templates/posts/post.html")
+}
+
+func (r *Renderer) SomeUserPage(w http.ResponseWriter, req *http.Request) {
+	userID := chi.URLParam(req, "id")
+	html, err := os.ReadFile("./static/templates/users/user.html")
+	if err != nil {
+		http.Error(w, "Error with render page", http.StatusInternalServerError)
+		return
+	}
+	modifiedHTML := strings.Replace(string(html), "<body>", fmt.Sprintf("<body data-user-id=\"%s\">", userID), 1)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte(modifiedHTML))
 }

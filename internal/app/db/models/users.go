@@ -4,7 +4,7 @@ import "time"
 
 type Avatar struct {
 	ID   uint   `gorm:"primaryKey"`
-	Path string `gorm:"not null;unique"`
+	Path string `gorm:"not null"`
 }
 
 type User struct {
