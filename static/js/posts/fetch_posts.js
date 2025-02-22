@@ -6,16 +6,29 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let limit = 10;
     let offset = 0;
-    let orderBy = "created"; // По умолчанию "Новые"
+    let orderBy = "created";
+    let allPostsLoaded = false;
 
     async function fetchPosts() {
+        if (allPostsLoaded) return;
+
         try {
             const response = await fetch(`/api/recipes/?limit=${limit}&offset=${offset}&order_by=${orderBy}`);
             if (!response.ok) {
                 throw new Error("Ошибка при загрузке постов");
             }
-            const posts = await response.json();
-            renderPosts(posts);
+            const data = await response.json();
+
+            if (data.content.length === 0) {
+                allPostsLoaded = true;
+                return;
+            }
+
+            renderPosts(data.content);
+
+            if (data.content.length < limit) {
+                allPostsLoaded = true;
+            }
         } catch (error) {
             console.error("Ошибка:", error);
         }
@@ -23,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function renderPosts(posts) {
         if (offset === 0) {
-            contentContainer.innerHTML = ""; // Очищаем контейнер при новой загрузке
+            contentContainer.innerHTML = "";
         }
 
         posts.forEach(post => {
@@ -54,11 +67,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             contentContainer.appendChild(postElement);
         });
 
-        // Показываем заголовок с кнопками, если он вдруг исчезал
         postsHeader.style.opacity = "1";
     }
 
-    // Делегирование события для клика по аватарке и username
     contentContainer.addEventListener("click", (event) => {
         const target = event.target;
         if (target.classList.contains("user-link")) {
@@ -69,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
-    // Обработчик клика на лайк
     contentContainer.addEventListener("click", async (event) => {
         const likeButton = event.target.closest(".like-button");
         if (!likeButton) return;
@@ -80,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!postId || !likeIcon) return;
 
         try {
-            const response = await fetch(`/api/post/${postId}/like/`, {
+            const response = await fetch(`/api/recipes/${postId}/like/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
             });
@@ -89,7 +99,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 throw new Error("Ошибка при лайке поста");
             }
 
-            // Переключаем иконку лайка
             if (likeIcon.src.includes("like_black.svg")) {
                 likeIcon.src = "/static/images/general/icon/like_color.svg";
             } else {
@@ -103,6 +112,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     newPostsBtn.addEventListener("click", () => {
         orderBy = "created";
         offset = 0;
+        allPostsLoaded = false;
         newPostsBtn.classList.add("active");
         popularPostsBtn.classList.remove("active");
         fetchPosts();
@@ -111,12 +121,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     popularPostsBtn.addEventListener("click", () => {
         orderBy = "popular";
         offset = 0;
+        allPostsLoaded = false;
         popularPostsBtn.classList.add("active");
         newPostsBtn.classList.remove("active");
         fetchPosts();
     });
 
-    // Функция для подгрузки постов при прокрутке
     window.addEventListener("scroll", () => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
             offset += limit;

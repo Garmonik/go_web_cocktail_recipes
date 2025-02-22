@@ -97,9 +97,13 @@ func (p Posts) PostsListAPI(w http.ResponseWriter, r *http.Request) {
 			},
 		}
 	}
+	responseData := map[string]interface{}{
+		"count":   len(posts),
+		"content": response,
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	if err := json.NewEncoder(w).Encode(responseData); err != nil {
 		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
@@ -366,9 +370,12 @@ func (p Posts) PostsListByUserAPI(w http.ResponseWriter, r *http.Request) {
 			},
 		}
 	}
-
+	responseData := map[string]interface{}{
+		"count":   len(posts),
+		"content": response,
+	}
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	if err := json.NewEncoder(w).Encode(responseData); err != nil {
 		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
