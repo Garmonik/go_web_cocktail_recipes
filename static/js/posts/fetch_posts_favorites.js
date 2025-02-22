@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (allPostsLoaded) return;
 
         try {
-            const response = await fetch(`/api/recipes/?limit=${limit}&offset=${offset}&order_by=${orderBy}`);
+            const response = await fetch(`/api/recipes/like/list/?limit=${limit}&offset=${offset}&order_by=${orderBy}`);
             if (!response.ok) {
                 throw new Error("Ошибка при загрузке постов");
             }
@@ -70,6 +70,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         postsHeader.style.opacity = "1";
     }
 
+    contentContainer.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.classList.contains("user-link")) {
+            const userId = target.dataset.userId;
+            if (userId) {
+                window.location.href = `/user/${userId}/`;
+            }
+        }
+    });
+
     contentContainer.addEventListener("click", async (event) => {
         const likeButton = event.target.closest(".like-button");
         if (!likeButton) return;
@@ -101,7 +111,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             likeIcon.src = `/static/images/general/icon/${isLiked ? "like_color.svg" : "like_black.svg"}`;
         }
     });
-
 
     newPostsBtn.addEventListener("click", () => {
         orderBy = "created";

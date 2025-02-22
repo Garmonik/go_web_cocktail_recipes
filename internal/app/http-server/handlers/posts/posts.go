@@ -379,3 +379,81 @@ func (p Posts) PostsListByUserAPI(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
 	}
 }
+
+func (p Posts) PostsListLikeAPI(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	user, _ := utils.GetUserByToken(r, p.cfg, p.DataBase)
+	if user == nil {
+		http.Error(w, "user not found", http.StatusForbidden)
+		return
+	}
+
+	orderBy := r.URL.Query().Get("order_by")
+	var order string
+	switch orderBy {
+	case "created":
+		order = "created_at DESC"
+	case "popular":
+		order = "(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) DESC"
+	default:
+		order = "created_at DESC"
+	}
+
+	var posts []models.Post
+	if err := p.DataBase.Db.
+		Joins("JOIN likes ON likes.post_id = posts.id").
+		Where("likes.author_id = ?", user.ID).
+		Preload("Author.Avatar").
+		Preload("Image").
+		Order(order).
+		Limit(limit).
+		Offset(offset).
+		Find(&posts).Error; err != nil {
+		http.Error(w, "Error receiving posts", http.StatusInternalServerError)
+		return
+	}
+	response := make([]map[string]interface{}, len(posts))
+	for i, post := range posts {
+		imageData, err := os.ReadFile(post.Image.Path)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to read image"}`, http.StatusBadRequest)
+			return
+		}
+		imageBase64 := base64.StdEncoding.EncodeToString(imageData)
+		avatarData, err := os.ReadFile(post.Author.Avatar.Path)
+		if err != nil {
+			http.Error(w, `{"error": "Failed to read avatar"}`, http.StatusBadRequest)
+			return
+		}
+		avatarBase64 := base64.StdEncoding.EncodeToString(avatarData)
+		response[i] = map[string]interface{}{
+			"id":          post.ID,
+			"name":        post.Name,
+			"description": post.Description,
+			"image":       imageBase64,
+			"like":        true,
+			"author": map[string]string{
+				"id":       strconv.Itoa(int(post.Author.ID)),
+				"username": post.Author.Name,
+				"avatar":   avatarBase64,
+			},
+		}
+	}
+	responseData := map[string]interface{}{
+		"count":   len(posts),
+		"content": response,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(responseData); err != nil {
+		http.Error(w, "Error while encoding JSON", http.StatusInternalServerError)
+	}
+}

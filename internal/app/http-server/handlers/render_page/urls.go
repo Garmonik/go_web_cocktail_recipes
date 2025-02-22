@@ -15,5 +15,6 @@ func URLs(cfg *config.Config, r chi.Router, log *slog.Logger) {
 	r.Get("/my_user/", renderer.MyUserPage)
 	r.Get("/recipes/", renderer.PostsList)
 	r.Get("/user/{id}/", renderer.SomeUserPage)
+	r.Get("/favorites/", renderer.FavoritesPostsList)
 	return
 }

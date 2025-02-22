@@ -48,6 +48,10 @@ func (r *Renderer) PostsList(w http.ResponseWriter, req *http.Request) {
 	r.RenderPage(w, req, "./static/templates/posts/post.html")
 }
 
+func (r *Renderer) FavoritesPostsList(w http.ResponseWriter, req *http.Request) {
+	r.RenderPage(w, req, "./static/templates/posts/favorites.html")
+}
+
 func (r *Renderer) SomeUserPage(w http.ResponseWriter, req *http.Request) {
 	userID := chi.URLParam(req, "id")
 	html, err := os.ReadFile("./static/templates/users/user.html")
