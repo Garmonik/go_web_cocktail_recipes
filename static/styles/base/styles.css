@@ -137,3 +137,24 @@ body {
         margin-top: 15px;
     }
 }
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Делаем фон скроллбара прозрачным */
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+/* Сам ползунок */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff4500, #8b0000);
+    border-radius: 4px;
+}
+
+/* При наведении на скролл */
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff6347, #b22222);
+}

@@ -143,6 +143,7 @@ func (p Posts) PostsByIdAPI(w http.ResponseWriter, r *http.Request) {
 	avatarBase64 := base64.StdEncoding.EncodeToString(avatarData)
 	response := map[string]interface{}{
 		"id":          post.ID,
+		"name":        post.Name,
 		"description": post.Description,
 		"image":       imageBase64,
 		"like":        likedPost,
@@ -249,6 +250,7 @@ func (p Posts) PostCreate(w http.ResponseWriter, r *http.Request) {
 	avatarBase64 := base64.StdEncoding.EncodeToString(avatarData)
 	response := map[string]interface{}{
 		"id":          post.ID,
+		"name":        post.Name,
 		"description": post.Description,
 		"image":       imageBase64,
 		"like":        false,
