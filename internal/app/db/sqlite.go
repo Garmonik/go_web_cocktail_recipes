@@ -37,7 +37,6 @@ func (d *DataBase) migrate() error {
 		&models.User{},
 		&models.Post{},
 		&models.Image{},
-		&models.Comment{},
 		&models.Like{},
 	)
 }
