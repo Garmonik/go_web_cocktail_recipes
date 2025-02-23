@@ -60,7 +60,7 @@ func GenerateToken(facecontrol *Facecontrol, user *models.User, w http.ResponseW
 		Name:     "access_token",
 		Value:    accessToken,
 		Path:     "/",
-		Expires:  time.Now().Add(15 * time.Minute),
+		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,

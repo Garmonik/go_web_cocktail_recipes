@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles/base/styles.css">
+    <link rel="stylesheet" href="/static/styles/users/styles.css">
+    <link rel="stylesheet" href="/static/styles/users/update_styles.css">
+    <script src="/static/js/base/scripts.js"></script>
+    <script src="/static/js/users/edit_profile.js" defer></script>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <!-- Подключаем сайдбар -->
+    <div id="sidebar"></div>
+
+    <main class="content">
+    <h2>Редактирование профиля</h2>
+
+    <div id="upload-container">
+        <div id="upload-box">
+            <img id="image-preview" src="/static/images/base_avatar/default-avatar.png" alt="Аватар">
+            <button id="remove-image" title="Удалить фото">&times;</button>
+        </div>
+        <input type="file" id="avatar-input" accept="image/*" hidden>
+        <button id="upload-avatar">Загрузить новое фото</button>
+    </div>
+
+    <form id="edit-profile-form">
+        <label for="username">Имя:</label>
+        <input type="text" id="username" name="username" readonly>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" readonly>
+
+        <label for="bio">О себе:</label>
+        <textarea id="bio" name="bio" placeholder="Напишите что-нибудь о себе..."></textarea>
+
+        <button type="submit">Сохранить изменения</button>
+        <p id="message"></p>
+    </form>
+    </main>
+</div>
+</body>
+</html>

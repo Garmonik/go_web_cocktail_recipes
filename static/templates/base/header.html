@@ -4,6 +4,7 @@
         <a href="/home/">Главная</a>
     </div>
     <div class="right" id="user-info">
+        <button class="create-recipe-btn" onclick="location.href='/recipes/create/'">Создать рецепт</button>
         <div class="user-container">
             <span class="username">Загрузка...</span>
             <img class="avatar" src="/static/images/base_avatar/default-avatar.png" alt="Аватар">
@@ -56,6 +57,28 @@
         padding: 8px 12px;
         border-radius: 10px;
     }
+
+    .create-recipe-btn {
+        background-color: #ff4500;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: background 0.3s ease;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+    }
+
+    .create-recipe-btn:hover {
+        background-color: #e63e00;
+    }
+
 
     .username {
         color: white;

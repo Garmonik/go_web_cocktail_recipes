@@ -20,7 +20,7 @@ func CheckPassword(user *models.User, password string) bool {
 func CheckUserByEmail(email string, dataBase *db.DataBase) (*models.User, string) {
 	var user models.User
 	if err := dataBase.Db.Preload("Avatar").
-		Select("id", "name", "email", "password", "avatar_id").
+		Select("id", "name", "email", "password", "avatar_id", "bio").
 		Where("email = ?", email).
 		First(&user).Error; err != nil {
 		return &models.User{}, "users not found"

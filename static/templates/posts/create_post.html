@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание поста</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles/base/styles.css">
+    <link rel="stylesheet" href="/static/styles/posts/create_styles.css">
+    <script src="/static/js/base/scripts.js" defer></script>
+    <script src="/static/js/posts/create_post.js"></script>
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <div id="sidebar"></div>
+
+    <main class="content">
+        <h2>Создание поста</h2>
+        <form id="create-post-form" enctype="multipart/form-data">
+            <label for="name">Название:</label>
+            <input type="text" id="name" name="Name" required>
+
+            <label for="description">Описание:</label>
+            <textarea id="description" name="Description" required></textarea>
+
+            <label>Изображение:</label>
+            <div id="upload-container">
+                <input type="file" id="image" name="Image" accept=".jpg,.jpeg,.png,.gif,.webp" hidden>
+                <div id="upload-box" onclick="document.getElementById('image').click()">
+                    <span id="upload-icon">+</span>
+                </div>
+                <img id="image-preview" src="#" alt="Предпросмотр изображения" style="display: none;">
+                <button type="button" id="remove-image" style="display: none;">✖</button>
+            </div>
+
+            <button type="submit" id="submit-button">Создать</button>
+        </form>
+        <p id="message"></p>
+    </main>
+</div>
+
+</body>
+</html>
