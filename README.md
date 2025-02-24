@@ -26,3 +26,4 @@ ENV CONFIG_PATH=./config/local.yaml
 EXPOSE 8080
 CMD ["./server"]
 ```
+
